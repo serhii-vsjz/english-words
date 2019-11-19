@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Word;
+use Illuminate\Http\Request;
+
 
 class WordController extends Controller
 {
@@ -26,13 +27,23 @@ class WordController extends Controller
         $word = Word::find($id);
         if ($word->russian == $request['russian'])
         {
-            $word->repetition--;
-            echo 'правильно';
+            $word_res = [
+                'repetition' => $word->repetition - 1,
+                ];
+
+
         }
         else
         {
-            echo 'не правильно';
+            $word_res = [
+                'repetition' => $word->repetition + 1,
+            ];
         }
+        Word::where('id', $id)->update($word_res);
+
+        return redirect(route('word'));
+
+
     }
 
     /**
