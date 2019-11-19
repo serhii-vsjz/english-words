@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class WordController extends Controller
 {
+    public $lastResult = [
+        'last_russian' => 'слово',
+        'last_english' => 'word',
+        'last_correctly' => true
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -15,35 +21,30 @@ class WordController extends Controller
      */
     public function index()
     {
-
         $words = Word::all();
         $ran = mt_rand(1, $words->count());
         $word = Word::find($ran);
-        return view('word', compact('word'));
+
+        return view("play", $word, $this->lastResult);
     }
 
     public function check(Request $request, $id)
     {
         $word = Word::find($id);
-        if ($word->russian == $request['russian'])
+
+        if (strcasecmp($word->russian, $request['russian']))
         {
-            $word_res = [
-                'repetition' => $word->repetition - 1,
-                ];
-
-
+            $word->repetition = $word->repetition - 1;
+            $word->save();
+            $correctly = false;
         }
-        else
-        {
-            $word_res = [
-                'repetition' => $word->repetition + 1,
-            ];
+        else {
+            $word->repetition = $word->repetition + 1;
+            $word->save();
+            $correctly = true;
         }
-        Word::where('id', $id)->update($word_res);
 
-        return redirect(route('word'));
-
-
+        return redirect(route('play',['russian' => '$word->russian', 'english' => '$word->english', 'correctly' => $correctly]));
     }
 
     /**

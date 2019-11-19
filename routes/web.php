@@ -18,6 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/word', 'WordController@index')->name('word');
+
+Route::get('/play', 'WordController@index')->name('play');
 
 Route::patch('/word/{id}', 'WordController@check')->name('word_check');
